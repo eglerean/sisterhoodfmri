@@ -3,6 +3,8 @@ clear all
 T=712;
 R=264;
 ids=find(triu(ones(R),1));
+
+%% Compute the surrogate CDF by loading circ shift surrogate data 
 surro=[];
 for t=10:5:(T-10)
     disp(num2str(t))
@@ -11,6 +13,7 @@ for t=10:5:(T-10)
 end
 [fi xi]=ksdensity(surro,'function','cdf','npoints',5000);
 
+%% map the non-permuted ISFC values to uncorrected p-values
 load(['isfc_stats/' num2str(0) '.mat']); %isfc_mat
 disp('computing pvalues')
 for i=1:length(ids)
@@ -21,6 +24,7 @@ for i=1:length(ids)
     isfc_mat_pvals(i)=pval;
 end
 
+%% convert uncorrected p values into FDR corrected q values
 isfc_mat_qvals=mafdr(isfc_mat_pvals,'BHFDR','true');
 
 save('isfc_results.mat','isfc_mat','isfc_mat_qvals');

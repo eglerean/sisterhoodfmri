@@ -121,7 +121,7 @@ for r=1:264;
     end
 end
 
-%% calculate p values
+%% calculate p values from the surrogate null distribution
 
 for reg=1:(size(model,2)-1)
     for r=1:264
@@ -150,7 +150,7 @@ subids=[1  3 4 5  7 8 9 10 11 12];
 net_labels=subnet_labels(subids);
 subids=[0 subids];
 net_labels=[
-    {'All ROIs'}
+    {'All other ROIs'}
     net_labels];
 
 for subnetblock=1:length(subids)
@@ -163,27 +163,36 @@ for subnetblock=1:length(subids)
     for reg=1:8
         allsig(subnetblock,reg)=sum(qvals(roisss,reg)<0.05);
         allsigscaled(subnetblock,reg)=sum(qvals(roisss,reg)<0.05)/length(roisss);
-        allmeans(subnetblock,reg)=max(allB(roisss,reg));
+        allmeans(subnetblock,reg)=median(allB(roisss,reg));
         if(reg==8)
-            allmeans(subnetblock,reg)=max(allB(roisss,reg)-allB(roisss,reg+1));
+            allmeans(subnetblock,reg)=median(allB(roisss,reg)-allB(roisss,reg+1));
         end
     end
 end
 figure(100)
-subplot(1,2,1)
+%subplot(1,2,1)
 map=cbrewer('seq','Reds',9);
 map=[1 1 1;map];
 imagesc(allsigscaled,[0 1])
 set(gca,'YTickLabel',net_labels)
+set(gca,'XTick',[1:8])
 set(gca,'XTickLabel',model_labels(1:8))
+set(gca,'XTickLabelRotation',45)
+
 colormap(map)
-colorbar
-subplot(1,2,2)
-imagesc(allmeans)
-set(gca,'YTickLabel',net_labels)
-set(gca,'XTickLabel',model_labels(1:8))
-colormap(map)
-colorbar
+
+h=colorbar
+ylabel(h,'Percentage of significant regions of interest')
+
+%subplot(1,2,2)
+%imagesc(allmeans)
+%set(gca,'YTickLabel',net_labels)
+%set(gca,'XTick',[1:8])
+%set(gca,'XTickLabel',model_labels(1:8))
+%set(gca,'XTickLabelRotation',45)%
+%
+%colormap(map)
+%colorbar
 %%
 
 close all

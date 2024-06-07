@@ -1,5 +1,7 @@
 clear all
 close all 
+
+% here the file used for computing ISC with ISC toolbox
 load /m/nbe/scratch/braindata/bacham1/data_analysis/Analysis/ISC_and_GLM/ISC271114/Test.mat
 
 for n=1:120
@@ -12,18 +14,25 @@ for n=1:120
     end
 end
 
-disp('Adding toolbox')
+disp('Adding bramila toolbox')
+% git clone https://version.aalto.fi/gitlab/BML/bramila.git
 addpath(genpath('/m/nbe/scratch/braindata/shared/toolboxes/bramila//bramila'));
 
 Nsubj=length(subjpath);
 load rois_Power264;
 mkdir('rois')
 
+
+
+%% Here we extract the ROIs
 %disp('parfor starts')
-%parfor s=1:Nsubj
-%    roi_extract_helper(s,subjpath)
-%end
+parfor s=1:Nsubj
+    roi_extract_helper(s,subjpath)
+end
+
+%% here we compute the data for calculating the ISFC
 if(0)
+
 mkdir('isfc_data')
 for view=1:4
     
@@ -50,6 +59,8 @@ for view=1:4
 end
 end
 
+
+%% Here we make the ISC matrices for each ROI
 alldata=[];
 for s=1:120
 	disp(['loading ' num2str(s)])
@@ -63,6 +74,8 @@ for r=1:size(alldata,2)
 	iscmat=corr(slice);
 	save(['isc/iscroi_' num2str(r) '.mat'],'iscmat')
 end
+
+%% a helper function for extracting ROI
 
 function roi_extract_helper(s,subjpath)
     disp(['parfor Rois extraction for subject ' num2str(s)])

@@ -1,7 +1,11 @@
 close all
 clear all
-%addpath(genpath('/m/nbe/scratch/braindata/shared/toolboxes/bramila//bramila'));
-%addpath(genpath('/nbe/braindata/shared/toolboxes/bramila//bramila'));
+
+% remote folder
+% addpath(genpath('/m/nbe/scratch/braindata/shared/toolboxes/bramila//bramila'));
+% local folder
+addpath(genpath('/nbe/braindata/shared/toolboxes/bramila//bramila'));
+
 map=cbrewer('seq','Reds',9);
 map=[1 1 1;map];
 load('isfc_results.mat');
@@ -19,7 +23,9 @@ isfc_mat_th=isfc_mat.*(isfc_mat>th);
 %colorbar
 
 
-%%
+%% plot the ISFC matrix, rearranged using Power et al subnetworks
+
+% get subnetowkr IDs
 subnet_ids=[];
 for r=1:length(rois)
     subnet_ids(r,1)=rois(r).power_id;
@@ -33,6 +39,8 @@ outnet=zeros(R);
 outnet=isfc_mat_th;
 %outnet=outnet+outnet';
 outnet=outnet(bbb,bbb);
+
+% plot
 imagesc(outnet,[0 0.5])
 blocks=find(diff(aaa));
 hold on
@@ -54,6 +62,7 @@ set(gca,'YTick',mean(intervals,2));
 set(gca,'XTickLabel',outlabels)
 set(gca,'XTickLabelRotation',45)
 set(gca,'YTickLabel',outlabels)
+%% do a summary based on percentage of links per subnetwork
 
 for ri=1:length(subids)
     for ci=1:length(subids)
@@ -66,7 +75,6 @@ for ri=1:length(subids)
        
     end
 end
-%%
 figure
 h=imagesc(sum_stats,[0 1])
 h.AlphaData=1-triu(ones(10),1)
@@ -80,7 +88,7 @@ set(gca,'YTick',1:length(sum_stats));
 set(gca,'XTickLabel',subnet_labels(subids))
 set(gca,'XTickLabelRotation',45)
 set(gca,'YTickLabel',subnet_labels(subids))
-%%
+%% output some insteresting nodes based on node density
 
 ND=sum(isfc_mat);
 load rois_Power264_v2.mat
@@ -94,8 +102,8 @@ for r=1:264
     power_ids(r)=rois(r).power_id;
 end
 
-figure
-imagesc(power_ids)
+%figure
+%imagesc(power_ids)
 
 
 
